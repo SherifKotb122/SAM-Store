@@ -1,0 +1,352 @@
+﻿@* you should put these 2 using
+    as well as the script that is put under the component tag in the partial view or view holding the component
+    as well as the the service and endpoints added in the Startup.cs
+    to make the event firing work *@
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Web;
+
+@using OnlineStore_Identity.ViewModels;
+
+<div class="container">
+    <!--Section: Block Content-->
+    <section class="mb-5">
+
+        <div class="row">
+            <div class="col-md-6 mb-4 mb-md-0">
+
+                @*<div id="mdb-lightbox-ui"></div>*@
+
+                @*<div class="mdb-lightbox">*@
+
+                <div class="row mx-1">
+
+                    <div class="col-12 mb-0">
+                        <figure class="view overlay rounded z-depth-1 main-img text-center">
+                            @*<a href="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/15a.jpg"
+            data-size="710x823">*@
+                            @*<img src="data: image / jpg;base64,@(Product.Stores[0].productImage==null?"":Convert.ToBase64String(Product.Stores[0].productImage))"
+            class="img-fluid z-depth-1">*@
+                            @*</a>*@
+                            <img id="masterImage" class="w-80" src="/Images/@(Product.Stores.Count!=0 && Product.Stores.FirstOrDefault().productPhoto!=null?Product.Stores.FirstOrDefault().productPhoto:"ModelF1.jpg")" height="344" />
+                        </figure>
+                        <div class="col-12">
+                            <div class="row d-flex justify-content-center">
+                                @for (int i = 0; i < Product.Stores.Count; i++)
+                                {
+                                    if (i == 4)
+                                    {
+                                        break;
+                                    }
+
+                                    <div class="col-3" style="cursor:pointer">
+                                        <div class="view overlay rounded z-depth-1 gallery-item" onclick="changeImage(event)">
+                                            <img class="w-100" src="/Images/@(Product.Stores[i].productPhoto!=null?Product.Stores[i].productPhoto:"ModelF1.jpg")" height="80" />
+                                            @*<div class="mask rgba-white-slight"></div>*@
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                                @*<div class="col-12">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="view overlay rounded z-depth-1 gallery-item">
+                                                <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12a.jpg"
+                                                     class="img-fluid">
+                                                <div class="mask rgba-white-slight"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="view overlay rounded z-depth-1 gallery-item">
+                                                <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/13a.jpg"
+                                                     class="img-fluid">
+                                                <div class="mask rgba-white-slight"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="view overlay rounded z-depth-1 gallery-item">
+                                                <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/14a.jpg"
+                                                     class="img-fluid">
+                                                <div class="mask rgba-white-slight"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="view overlay rounded z-depth-1 gallery-item">
+                                                <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/15a.jpg"
+                                                     class="img-fluid">
+                                                <div class="mask rgba-white-slight"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+                            </div>
+
+                            @*</div>*@
+
+                        </div>
+            <div class="col-md-6">
+
+                <h5>@Product.productName</h5>
+                <p class="mb-2 text-muted text-uppercase small">@Product.Category.categoryName / @Product.Class.className</p>
+                <ul class="list-unstyled d-inline-flex">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= rate)
+                        {
+                            <li>
+                                <i class="fas fa-star fa-sm text-primary"></i>
+                            </li>
+ }
+                        else
+                        {
+                            <li>
+                                <i class="far fa-star fa-sm text-primary"></i>
+                            </li>
+}
+                    }
+
+                </ul>
+                <span>@Product.Reviews.Count reviews</span>
+                <p>
+                    @if (Product.productDiscount == 0)
+                    {
+                        <span class="mr-3"><strong>EGP @(Math.Round(Product.productPrice,2))</strong></span>
+                    }
+                    else
+                    {
+                        <span class="mr-3 text-danger"><strong>EGP @(Math.Round((Product.productPrice)*(1-Product.productDiscount/100),2))</strong></span><span class="px-3"><strong><s>EGP @Product.productPrice</s></strong></span>
+                    }
+                </p>
+                <p class="pt-1">
+                    @*Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam, sapiente illo. Sit
+                        error voluptas repellat rerum quidem, soluta enim perferendis voluptates laboriosam. Distinctio,
+                        officia quis dolore quos sapiente tempore alias.*@
+                    @Product.productDescription
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Brand</strong></th>
+                                <td>@Product.productBrand</td>
+                            </tr>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Material</strong></th>
+                                <td>@Product.productMaterial</td>
+                            </tr>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Select Size</strong></th>
+                                <td>
+                                    <div class="form-group">
+
+                                        <select @onchange="SizeChange" class="form-select w-50">
+                                            <option></option>
+                                            @* to select distinct size *@
+                                            @foreach (var item in Product.Stores.Select(s => s.productSize).GroupBy(s => s).Select(s => s.First()).ToList())
+                                            {
+                                                <option value="@item">@item</option>
+}
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <hr>
+                <div class="table-responsive mb-2">
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            <tr>
+                                <td class="pl-0 pb-0">Quantity</td>
+                                <td class="pb-0">Select Color</td>
+                            </tr>
+                            <tr>
+                                <td class="pl-0">
+                                    @if (!string.IsNullOrEmpty(Size))
+                                    {
+
+                                        <div class="def-number-input number-input safari_only mb-0">
+                                            @*<button onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
+                                                        class="btn">
+                                                    +
+                                                </button>*@
+                                            <input class="max-width-100 form-control" onkeydown="prevent(event)" id="Quantity" @bind="quantity" min="0" max="@Max" name="quantity" type="number">
+
+                                            @*<button onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
+                                                        class="btn">
+                                                    -
+                                                </button>*@
+                                        </div>}
+                                </td>
+                                <td>
+                                    <div class="mt-1">
+                                        <select @onchange="ColorChange" class="form-select w-50">
+                                            <option selected="@newSize"></option>
+                                            @foreach (var item in Colors)
+                                            {
+                                                <option value="@item">@item</option>
+}
+                                        </select>
+                                        @*<div class="form-check form-check pl-0">
+                                                <input type="radio" class="form-check-input" id="small" name="materialExampleRadios"
+                                                        checked>
+                                                <label class="form-check-label small text-uppercase card-link-secondary"
+                                                        for="small">Small</label>
+                                            </div>
+                                            <div class="form-check form-check pl-0">
+                                                <input type="radio" class="form-check-input" id="medium" name="materialExampleRadios">
+                                                <label class="form-check-label small text-uppercase card-link-secondary"
+                                                        for="medium">Medium</label>
+                                            </div>
+                                            <div class="form-check form-check pl-0">
+                                                <input type="radio" class="form-check-input" id="large" name="materialExampleRadios">
+                                                <label class="form-check-label small text-uppercase card-link-secondary"
+                                                        for="large">Large</label>
+                                            </div>*@
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p hidden="@(quantity<=Max ||quantity<=0)" class="text-danger">Exceeds store quantity</p>
+                    <p hidden="@(color==null || (color!=null && Max!=0))" class="text-danger">Out of stock</p>
+                </div>
+                <button type="button" disabled="@(quantity <= 0 || quantity > Max)" class="btn btn-primary btn-md mr-1 mb-2">Buy now</button>
+                <button type="button" disabled="@(quantity <= 0 || quantity > Max || productCheck)" class="btn btn-info btn-md mr-1 mb-2" onclick="AddToCart(@storeID,@quantity, event)">
+                    <span class="fas fa-shopping-cart pr-2"></span>Add to cart
+                </button>
+                <button class="btn @loveColor btn-md mr-1 mb-2" type="button" disabled="@(user==null)" onclick="AddToWishlist(@Product.productID,event)"><span class="fa fa-heart"></span></button>
+                <p class="text-info font-weight-bolder" hidden="@(!productCheck)">Already in cart <i class="fas fa-shopping-cart pr-2"></i></p>
+            </div>
+        </div>
+
+    </section>
+    <!--Section: Block Content-->
+    
+    <!-- Classic tabs -->
+    <div class="classic-tabs border rounded px-4 pt-1">
+
+        <ul class="nav tabs-primary nav-justified" id="advancedTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active show" id="reviews-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="true">Reviews (@Product.Reviews.Count)</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="advancedTabContent">
+            <div class="tab-pane fade show active" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                <h5><span>@Product.Reviews.Count</span> review for <span>@Product.productName</span></h5>
+                @foreach (var item in Product.Reviews)
+                {
+                    <div class="media mt-3 mb-4">
+                        <img class="d-flex mr-3 z-depth-1" src="https://mdbootstrap.com/img/Photos/Others/placeholder1.jpg" width="62" alt="Generic placeholder image">
+                        <div class="media-body">
+                            <div class="d-sm-flex justify-content-between">
+                                <p class="mt-1 mb-2">
+                                    <strong>@item.AspNetUser.UserName </strong>
+                                    @*<span>– </span><span>January 28, 2020</span>*@
+                                </p>
+                                <ul class="list-unstyled d-inline-flex">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= item.rate)
+                                        {
+                                            <li>
+                                                <i class="fas fa-star fa-sm text-primary"></i>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <i class="far fa-star fa-sm text-primary"></i>
+                                            </li>
+                                        }
+                                    }
+
+                                </ul>
+                            </div>
+                            <p class="mb-0">@item.reviewNotes</p>
+                        </div>
+                    </div>
+                    <hr>
+                }
+            </div>
+        </div>
+
+    </div>
+    <!-- Classic tabs -->
+
+</div>
+
+@code { #region Properties
+    [Parameter] public HomeProductDetailsVM Product { get; set; }
+
+    [Parameter] public int rate { get; set; }
+
+    [Parameter] public string loveColor { get; set; }
+
+    [Parameter] public string user { get; set; }
+
+    public string Size { get; set; }
+
+    public List<string> Colors { get; set; } = new List<string>();
+
+    public int Max { get; set; } = 0;
+
+    public int quantity { get; set; }
+
+    public string color { get; set; }
+
+    public bool newSize { get; set; } = true;
+
+    public int storeID { get; set; }
+
+    public bool productCheck { get; set; }
+    #endregion
+
+    public void SizeChange(ChangeEventArgs args)
+    {
+        Size = args.Value as string;
+
+        newSize = true;
+
+        Colors = Product.Stores.Where(s => s.productSize == Size).Select(s => s.productColor).ToList();
+
+        quantity = Max == 0 ? 0 : 1;
+    }
+
+    public void ColorChange(ChangeEventArgs args)
+    {
+        color = args.Value as string;
+
+        newSize = false;
+
+        var store = GetStore(color);
+        //Max = Product.Stores.Where(s => s.productColor == color && s.productSize == Size).Select(s => s.productQuantity).FirstOrDefault() ?? 0;
+        Max = store.productQuantity ?? 0;
+        storeID = store.ID;
+        productCheck = Product.Stores.Where(s => s.ID == storeID).FirstOrDefault().Carts.Where(c => c.userID == user).FirstOrDefault() != null;
+        quantity = Max == 0 ? 0 : 1;
+    }
+
+    //public void WishList()
+    //{
+    //    if (loveColor == "btn-light")
+    //        loveColor = "btn-danger";
+    //    else
+    //        loveColor = "btn-light";
+    //} }
+
+    public OnlineStore_Identity.Models.Store GetStore(string color)
+    {
+        OnlineStore_Identity.Models.Store store;
+        do
+        {
+            store = Product.Stores.Where(s => s.productColor == color && s.productSize == Size).FirstOrDefault();
+        }
+        while (store == null);
+
+        return store;
+    } 
+}

@@ -1,0 +1,315 @@
+﻿@*@using Kendo.Mvc.UI*@
+@model IEnumerable<OnlineStore_Identity.Models.Product>
+
+@*@(Html.Kendo().Grid<OnlineStore_Identity.Models.Product>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Select().Width(75).HtmlAttributes(new { @class = "checkbox-align" }).HeaderHtmlAttributes(new { @class = "checkbox-align" });
+            columns.Bound(p => p.productName).Title("Name").Width(105)
+            .ClientTemplate(
+                @"<div class='product-photo'
+                    style='background-image: url(" + @Url.Content("~/shared/web/foods/#:data.ProductID#.jpg") + ");'></div><div class='product-name'>#: ProductName #</div>").Width(300);
+            columns.Bound(p => p.productPrice).Title("Price").Width(105);
+            columns.Bound(p => p.productBrand).Title("Brand").Width(130)
+                                .ClientTemplate("<span id='badge_#=ProductID#' class='badgeTemplate'></span>");
+            columns.Bound(p => p.productDiscount).Title("Discount").EditorTemplateName("ClientCategoryEditor").ClientGroupHeaderTemplate("Category: #=data.value#, Total Sales: #=kendo.format('{0:c}', data.aggregates.TotalSales.sum)#").Width(125);
+            columns.Bound(p => p.productMaterial).Title("Material").Width(140).Editable("returnFalse").ClientTemplate(Html.Kendo().Rating()
+                    .Name("rating_#=ProductID#")
+                    .Min(1)
+                    .Max(5)
+                    .Label(false)
+                    .HtmlAttributes(new { data_bind = "value: CustomerRating" })
+                    .Selection("continuous")
+                    .ToClientTemplate().Value
+                );
+            columns.Bound(p => p.productDescription).Title("Description").EditorTemplateName("Country").ClientTemplate(
+                @"<div class='k-text-center'><img src='" + @Url.Content("~/shared/web/country-flags/#:data.Country.CountryNameShort#.png") + "' alt='#: data.Country.CountryNameLong#' title='#: data.Country.CountryNameLong#' width='30' /></div>").Width(120);
+            columns.Bound(p => p.classID).Title("Class").Width(105);
+            columns.Bound(p => p.categoryID).Title("Category").Width(140).Format("{0:c}");
+            columns.Bound(p => p.productID).Editable("returnFalse").Title("Target Sales")
+                          .ClientTemplate(Html.Kendo().Sparkline()
+                          .Name("chart_#=ProductID#")
+                          .Legend(legend => legend
+                              .Visible(false)
+                          )
+                          .Type(SparklineType.Bar)
+                          .HtmlAttributes(new { data_series = "[{data: [#=TargetSales#], labels:{visible:true, format:'{0}%', background:'none'}}]" })
+                              .ChartArea(chartArea => chartArea.Margin(0).Width(180))
+                              .CategoryAxis(axis => axis
+                                  .MajorGridLines(lines => lines.Visible(false))
+                                  .MajorTicks(lines => lines.Visible(false))
+                              )
+                              .ChartArea(c => c.Background("transparent"))
+                              .ValueAxis(axis => axis
+                                  .Numeric()
+                                  .Min(0)
+                                  .Max(130)
+                                  .Visible(false)
+                                  .Labels(l => l.Visible(false))
+                                  .MinorTicks(lines => lines.Visible(false))
+                                  .MajorGridLines(lines => lines.Visible(false))
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(false)
+                              ).ToClientTemplate().Value
+                         ).Width(220);
+            columns.Command(command => command.Destroy()).Width(120);
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Excel();
+            toolbar.Pdf();
+            toolbar.Search();
+        })
+        .Pdf(pdf => pdf.ProxyURL(Url.Action("Excel_Export_Save", "Grid")))
+        .Excel(excel => excel.ProxyURL(Url.Action("Excel_Export_Save", "Grid")))
+        .ColumnMenu(col => col.Filterable(false))
+        .Height(700)
+        .Editable(editable => editable.Mode(GridEditMode.InCell))
+        .Pageable()
+        .Sortable()
+        .Navigatable()
+        .Resizable(r => r.Columns(true))
+        .Reorderable(r => r.Columns(true))
+        .Groupable(g => g.ShowFooter(false))
+        .Filterable()
+        .Scrollable()
+        .Events(events => events.DataBound("onDataBound"))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Batch(true)
+            .PageSize(20)
+            .AutoSync(true)
+            .ServerOperation(false)
+            .Events(events => events.Error("error_handler"))
+            .Model(model =>
+            {
+                model.Id(p => p.productID);
+                model.Field(p => p.productName).Editable(false);
+                model.Field(p => p.productPrice).Editable(false);
+                model.Field(p => p.productDiscount).Editable(false);
+                model.Field(p => p.Category).DefaultValue(new Category() { categoryID = 1, categoryName = "Seafood" });
+                model.Field(p => p.Class).DefaultValue(new Class() { classID = 1, className = "Women" });
+            })
+        .Group(group => group.Add("Category.categoryName", typeof(string)))
+        .Aggregates(agg => agg.Add(field => field.categoryID).Sum())
+        .Create("DetailProducts_Create", "Grid")
+        .Read("DetailProducts_Read", "Grid")
+        .Update("DetailProducts_Update", "Grid")
+        .Destroy("DetailProducts_Destroy", "Grid")
+        );
+    )
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.4.0/jszip.min.js"></script>
+
+    <script type="text/javascript">
+            function error_handler(e) {
+                if (e.errors) {
+                    var message = "Errors:\n";
+                    $.each(e.errors, function (key, value) {
+                        if ('errors' in value) {
+                            $.each(value.errors, function () {
+                                message += this + "\n";
+                            });
+                        }
+                    });
+                    alert(message);
+                }
+            }
+
+            function onDataBound(e) {
+                var grid = this;
+                grid.table.find("tr").each(function () {
+                    var dataItem = grid.dataItem(this);
+                    var themeColor = dataItem.Discontinued ? 'success' : 'error';
+                    var text = dataItem.Discontinued ? 'available' : 'not available';
+
+                    $(this).find('script').each(function () {
+                        eval($(this).html());
+                    });
+
+                    $(this).find(".badgeTemplate").kendoBadge({
+                        themeColor: themeColor,
+                        text: text,
+                    });
+
+
+                    kendo.bind($(this), dataItem);
+                });
+            }
+
+            function returnFalse() {
+                return false;
+            }
+    </script>
+
+    <style>
+        .k-grid tr .checkbox-align {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .product-photo {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-size: 32px 35px;
+            background-position: center center;
+            vertical-align: middle;
+            line-height: 32px;
+            box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+            margin-right: 5px;
+        }
+
+        .product-name {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 32px;
+            padding-left: 3px;
+        }
+
+        .k-rating-container .k-rating-item {
+            padding: 4px 0;
+        }
+
+            .k-rating-container .k-rating-item .k-icon {
+                font-size: 16px;
+            }
+
+        .dropdown-country-wrap {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+            .dropdown-country-wrap img {
+                margin-right: 10px;
+            }
+
+        #grid .k-grid-edit-row > td > .k-rating {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .k-grid .k-grid-search {
+            margin-left: auto;
+            margin-right: 0;
+        }
+    </style>*@
+
+
+@*@{
+        var dvdTemplate = "# if (data.DVD) { # <i class='fa fa-check' aria-hidden='true'></i> # } #";
+        var blueRayTemplate = "# if (data.BlueRay) { # <i class='fa fa-check' aria-hidden='true'></i> # } #";
+    }*@
+
+    <div>
+        @*@(Html.Kendo().Grid<OnlineStore_Identity.Models.Product>(Model)*@
+                @*.Name("Products")
+                .Columns(columns => {
+                    columns.Bound(p => p.productID);
+                    columns.Bound(p => p.productName);
+                    columns.Bound(p => p.productPrice);
+                    columns.Bound(p => p.productDiscount);
+                    columns.Bound(p => p.productBrand);
+                    columns.Bound(p => p.productDescription);
+                    columns.Bound(p => p.productMaterial);
+                    //columns.ForeignKey(p => p.classID, (System.Collections.IEnumerable)ViewData["genres"], "classID", "className").Title("Genre");
+                    //columns.ForeignKey(p => p.categoryID, (System.Collections.IEnumerable)ViewData["ratings"], "categoryID", "categoryName").Title("Rating");
+                    //columns.Bound(p => p.).ClientTemplate(dvdTemplate).HtmlAttributes(new { style = "text-align: center" });
+                    //columns.Bound(p => p.BlueRay).Title("BlueRay").ClientTemplate(blueRayTemplate).HtmlAttributes(new { style = "text-align: center" });
+                }*@
+            
+            @*.DataSource(datasource => datasource
+            .Ajax()
+            .ServerOperation(false)
+            .Read(read => read.Action("Index", "Products"))
+        )
+            )*@
+            @*))*@
+    </div>
+
+
+<div>
+        @*@(Html.Kendo().Grid<OnlineStore_Identity.Models.Product>()
+        .Name("Products")
+        .DataSource(datasource => datasource
+             .Ajax()
+             .ServerOperation(false)
+             .Read(read => read.Action("Index", "Products"))
+        )*@
+    
+    </div>
+
+
+@*@(Html.Kendo().Grid < OnlineStore_Identity.Models.Product>()
+    .Name("Grid")
+     .Columns(columns =>
+     {
+         columns.Bound(p => p.productName);
+         columns.Bound(p => p.productPrice).Width(140);
+         columns.Bound(p => p.productDiscount).Width(140);
+         columns.Bound(p => p.productMaterial).Width(100);
+         columns.Command(command => command.Destroy()).Width(150);
+     })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create();
+        toolbar.Save();
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InCell))
+    .Pageable()
+    .Navigatable()
+    .Scrollable()
+    .DataSource(dataSource => dataSource
+        .Custom()
+        .Batch(true)
+        .Type("odata-v4")
+        .Schema(schema => schema
+            .Model(m =>
+            {
+                m.Id(t => t.productID);
+                m.Field(t => t.productID).Editable(false);
+                m.Field(t => t.productName);
+                m.Field(t => t.productPrice);
+                m.Field(t => t.productDiscount);
+                m.Field(t => t.productMaterial);
+                m.Field(t => t.productBrand);
+            }))
+        .Transport(t =>
+        {
+            t.Read(new { url = new Kendo.Mvc.ClientHandlerDescriptor() { HandlerName = "read" } });
+            t.Update(new { url = new Kendo.Mvc.ClientHandlerDescriptor() { HandlerName = "update" } });
+            t.Create(new { url = new Kendo.Mvc.ClientHandlerDescriptor() { HandlerName = "create" } });
+            t.Destroy(new { url = new Kendo.Mvc.ClientHandlerDescriptor() { HandlerName = "destroy" } });
+            t.Batch(new { url = new Kendo.Mvc.ClientHandlerDescriptor() { HandlerName = "batch" } });
+        })
+        .PageSize(20)
+        .ServerPaging(true)
+    )
+)
+<script>
+    function batch() {
+        return "https://demos.telerik.com/kendo-ui/service-v4/odata/$batch";
+    }
+
+    function read() {
+        return "http://shirleyomda-001-site1.etempurl.com/odata/Products";
+    }
+
+    function update(dataItem) {
+        return "https://demos.telerik.com/kendo-ui/service-v4/odata/Products(" + dataItem.ProductID + ")";
+    }
+
+    function create(dataItem) {
+        delete dataItem.ProductID;
+        return "https://demos.telerik.com/kendo-ui/service-v4/odata/Products";
+    }
+
+    function destroy(dataItem) {
+        return "https://demos.telerik.com/kendo-ui/service-v4/odata/Products(" + dataItem.ProductID + ")";
+    }
+</script>*@

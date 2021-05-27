@@ -1,0 +1,244 @@
+﻿@model OnlineStore_Identity.ViewModels.ProductBillVM
+
+<div class="container py-4">
+    <div class="row" id="cards">
+        <div class="col-xl-6 col-sm-4 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Money</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    EGP <span style="color:#e74c3c;">@(String.Format("{0:n0}", Math.Round(Model.todayProfit, 2)))</span>
+                                    @*<span class="text-success text-sm font-weight-bolder">+55%</span>*@
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-sm-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-capitalize font-weight-bold">Sales</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    EGP <span style="color:#e74c3c;">@(String.Format("{0:n0}", Math.Round(Model.allProfit, 2)))</span>
+                                    @*<span class="text-success text-sm font-weight-bolder">+5%</span>*@
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card-body container pt-0 pb-2">
+    <a onclick="showPopUp('@Url.Action("AddOrEdit","Products",null,Context.Request.Scheme)', 'New Product')" class="btn bg-gradient-primary text-white">New Product</a>
+    <div class="card wish-list mb-3 max-height-550">
+        <div class="card-body w-100 justify-content-center d-flex">
+
+            <div class="table-responsive p-0">
+
+                <table id="tableFilter" class="table-stripedd table-borderless border-0 border-b-2 brc-default-l1 border-radius-sm">
+
+                    <thead class="bg-primary bgc-default-tp1" >
+                        <tr class="text-white justify-content-center">
+                            <th class=" text-lg font-weight-bolder  text-white  text-center" style="border-top-left-radius:5px">
+                                @*@Html.DisplayNameFor(model=>model.productName)*@
+                                Product Name
+                            </th>
+                            <th class=" text-lg font-weight-bolder text-white  text-center">
+                                @*@Html.DisplayNameFor(model => model.productBrand)*@
+                                Product Brand
+                            </th>
+                            <th class="  text-lg font-weight-bolder   text-white  text-center">
+                                @*@Html.DisplayNameFor(model => model.productMaterial)*@
+                                Product Material
+                            </th>
+                            <th class="  text-lg font-weight-bolder  text-white   text-center">
+                                @*@Html.DisplayNameFor(model => model.productPrice)*@
+                                Product Price
+                            </th>
+                            <th class=" text-lg font-weight-bolder  text-white  text-center">
+                                @*@Html.DisplayNameFor(model => model.productDiscount)*@
+                                Discount
+                            </th>
+                            <!--<th class="  text-sm font-weight-bolder opacity-7 align-middle text-center">-->
+                            @*@Html.DisplayNameFor(model => model.productDescription)*@
+                            <!--Description
+                            </th>-->
+                            @*<th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    @Html.DisplayNameFor(model => model.Category)
+                                </th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                    @Html.DisplayNameFor(model => model.Class)
+                                </th>*@
+                            <th class=" text-lg font-weight-bolder  text-white  text-center">Class</th>
+                            <th class="  text-lg font-weight-bolder  text-white  text-center">Category</th>
+                            <th class="  text-lg font-weight-bolder text-white  text-center">Sales</th>
+                            @*<th class="  text-sm font-weight-bolder opacity-7 align-middle text-center">Stock</th>*@
+                            <th class=" text-lg font-weight-bolder  text-white  text-center dashSort"></th>
+                            <th class=" text-lg font-weight-bolder  text-white  text-center dashSort"></th>
+                            <th class=" text-lg font-weight-bolder  text-white text-center dashSort" style="border-top-right-radius:5px"></th>
+
+                        </tr>
+                    </thead>
+                    <tbody class="text-95 text-secondary-d3">
+
+                        @foreach (var item in Model.products)
+                        {
+                            Model.stock = 0;
+                            Model.storeQuan = 0;
+                            Model.billQuan = 0;
+                            Model.total = 0;
+                        <tr>
+                            <td class="align-middle text-center">
+                                @Html.DisplayFor(modelItem => item.productName)
+                            </td>
+                            <td class="align-middle text-center">
+                                @Html.DisplayFor(modelItem => item.productBrand)
+                            </td>
+                            <td class="align-middle text-center">
+                                @Html.DisplayFor(modelItem => item.productMaterial)
+                            </td>
+                            <td class="align-middle text-center">
+                                @Html.DisplayFor(modelItem => item.productPrice)
+                            </td>
+                            <td class="align-middle text-center">
+                                @Html.DisplayFor(modelItem => item.productDiscount)
+                            </td>
+                            @*<td class="align-middle text-center">
+            @Html.DisplayFor(modelItem => item.productDescription)
+        </td>*@
+                            @*<td class="align-middle text-center text-sm">
+            <span class="badge badge-sm bg-gradient-success">
+                @Html.DisplayFor(modelItem => item.Category.categoryID)
+            </span>
+        </td>*@
+                            @*<td class="align-middle text-center text-sm">
+            <span class="badge badge-sm bg-gradient-success">
+                @Html.DisplayFor(modelItem => item.Class.classID)
+            </span>
+        </td>*@
+                            <td class="align-middle text-center">
+                                @foreach (var i in Model.classes)
+                                {
+                                    if (i.classID == item.classID)
+                                    {
+                                        Model.className = i.className;
+                                    }
+                                }
+                                @Html.DisplayFor(modelItem => Model.className)
+
+
+                            </td>
+                            <td class="align-middle text-center">
+
+                                @foreach (var i in Model.categories)
+                                {
+                                    if (i.categoryID == item.categoryID)
+                                    {
+                                        Model.categoryName = i.categoryName;
+                                    }
+
+                                }
+                                @Html.DisplayFor(modelItem => Model.categoryName)
+
+                            </td>
+                            <td class="align-middle text-center">
+
+                                @foreach (var i in Model.stores)
+                                {
+                                    if (i.productID == item.productID)
+                                    {
+                                        Model.storeQuan += (decimal)i.productQuantity;
+                                    }
+                                }
+                                @foreach (var i in Model.billProducts)
+                                {
+                                    if (i.productID == item.productID)
+                                    {
+                                        Model.billQuan += (decimal)i.billProductQuantity;
+                                    }
+                                }
+                                @{
+                                    if (Model.storeQuan == 0)
+                                    {
+                                        Model.storeQuan = 1;
+                                    }
+                                }
+                                @{
+
+                                    Model.makam = Model.storeQuan + Model.billQuan;
+                                    Model.stock = (Model.billQuan / Model.makam) * 100;
+                                    Model.total = (int)Math.Round(Model.stock, 0);
+                                }
+
+                                @Html.DisplayFor(modelItem => Model.total) %
+
+
+                            </td>
+                            @*<td>
+            @{Model.total = 100 - Model.total;}
+            @Html.DisplayFor(modelItem => Model.total) %
+        </td>*@
+                            <td class="align-middle text-center text-sm">
+                                @*<span class="badge badge-sm bg-gradient-secondary">
+                <a asp-action="Edit" asp-route-id="@item.productID" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                    Edit
+                </a>
+
+            </span>*@
+
+                                <a onclick="showPopUp('@Url.Action("AddOrEdit","Products",new {id=item.productID},Context.Request.Scheme)', 'Edit Product')" class="btn btn btn-outline-warning text-black pr-3 pl-3" style="height:40px;color:#f0ad4e; border-color:#f0ad4e !important">Edit</a>
+                            </td>
+                            <td class="align-middle text-center text-sm">
+                                <a onclick="deletePopUp('@Url.Action("Delete","Products",new {id=item.productID},Context.Request.Scheme)', 'Delete Product')" class="btn btn btn-outline-danger text-black pr-2 pl-2" style="height:40px; color:#d9534f">Delete</a>
+                            </td>
+                            @*<a asp-action="Details" asp-controller="Details" asp-route-id="@item.productID">Edit</a>*@
+
+                            <td class="align-middle text-center text-sm">
+                                <a asp-action="Details" class="btn btn-outline-info pr-2 pl-2" style="color:#5bc0de;" asp-route-id="@item.productID">Details</a>
+                            </td>
+                          
+                            @*<td class="align-middle text-center text-sm">
+            <span class="badge badge-sm bg-gradient-secondary">
+                <a asp-action="Delete" asp-route-id="@item.productID" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Delete user">
+                    Delete
+                </a>
+            </span>
+        </td>*@
+                            @*<td>
+            <a asp-action="Edit" asp-route-id="@item.productID">Edit</a> |
+            <a asp-action="Details" asp-route-id="@item.productID">Details</a>
+            <a asp-action="Details" asp-route-id="@item.productID">Details</a>|
+            <a asp-action="Delete" asp-route-id="@item.productID">Delete</a>
+        </td>*@
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+        @*<script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/dt-1.10.24/b-1.7.0/fc-3.3.2/sc-2.0.3/sb-1.0.1/sp-1.2.2/sl-1.3.3/datatables.min.js"></script>*@

@@ -1,0 +1,133 @@
+﻿@model IEnumerable<WishList>
+
+<div style="display:none" id="wishlistCount">@Model.Count()</div>
+
+    <div class="alert" id="whenEmpty" style="display:none; font-size:25px;text-align:center; color:#cb0c9f">
+        <i class="fas fa-9x fa-heart-broken"></i>
+        <div class="mb-5" style="align-content:center"><strong><i class="fas fa-info-circle mr-1"></i></strong>Your wishlist is empty please continue shopping</div>
+        <a class="btn bg-gradient-primary" href="@Url.Action("Index","Home")">Continue Shopping</a>
+    </div>
+
+
+@foreach (var item in Model)
+{
+    <!-- Grid column -->
+    <div class="col-md-4 mb-5 justify-content-center d-flex">
+
+        <!-- Card -->
+        <div class="w-85  justify-content-center">
+
+            <div class="view zoom overlay z-depth-2 rounded justify-content-center d-flex" >
+                <img class="img-fluid w-80" style="height:300px !important; border-radius:10px;" src="~/Images/@(item.Product.Stores.Count!=0 && item.Product.Stores.FirstOrDefault().productPhoto!=null?item.Product.Stores.FirstOrDefault().productPhoto:"ModelF1.jpg")" />
+                @*<a href="#!">
+            <div class="mask">
+                <img class="img-fluid w-100"
+                     src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg">
+                <div class="mask rgba-black-slight"></div>
+            </div>
+        </a>*@
+            </div>
+
+            <div class="text-center pt-4">
+
+                <h5>
+                    @item.Product.productName
+                    @*<span class="ml-3">
+                            <ul class="list-unstyled d-inline-flex">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= (item.Product.Reviews.Count() == 0 ? 0 : item.Product.Reviews.Select(r => r.rate).Sum() / item.Product.Reviews.Count()))
+                                    {
+                                        <li>
+                                            <i class="fas fa-star fa-sm text-primary"></i>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <i class="far fa-star fa-sm text-primary"></i>
+                                        </li>
+                                    }
+                                }
+
+                            </ul>
+                        </span>*@
+                </h5>
+
+                <p class="mb-2 text-muted text-uppercase small">
+                    @*@{ var catName = "";}
+
+                        @foreach (var c in ViewBag.catIDs)
+                        {
+                            if (item.Product.categoryID == c.categoryID)
+                            {
+                                catName = c.categoryName;
+                                break;
+                            }
+                        }
+                        @catName*@
+                    @item.Product.Category.categoryName
+                </p>
+
+                <ul class="list-unstyled d-flex justify-content-center">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= (item.Product.Reviews.Count() == 0 ? 0 : item.Product.Reviews.Select(r => r.rate).Sum() / item.Product.Reviews.Count()))
+                        {
+                            <li>
+                                <i class="fas fa-star fa-sm text-primary"></i>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <i class="far fa-star fa-sm text-primary"></i>
+                            </li>
+                        }
+                    }
+
+                </ul>
+                @*<ul class="list-unstyled d-flex justify-content-center">
+                        @{var rate = 0; var count = 0;}
+                        @foreach (var rev in ViewBag.review)
+                        {
+                            if (item.productID == rev.productID)
+                            {
+                                rate += rev.rate;
+                                count++;
+                            }
+                        }
+                        @{ rate = count == 0 ? rate : rate / count;}
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= rate)
+                            {
+                                <li>
+                                    <i class="fas fa-star fa-sm text-primary"></i>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <i class="far fa-star fa-sm text-primary"></i>
+                                </li>
+                            }
+                        }
+                    </ul>*@
+                <hr>
+                <h6 class="mb-3">EGP @item.Product.productPrice</h6>
+                <button type="button" class="btn btn-light btn-sm mr-1 mb-2" onclick="showDetails('@Url.Action("ProductDetails","Home",new {id=item.productID})')">
+                    <i class="fas fa-info-circle pr-2"></i>Details
+                </button>
+                <button type="button" class="btn btn-danger btn-sm px-3 mb-2 material-tooltip-main"
+                        data-toggle="tooltip" data-placement="top" title="Remove from wishlist" onclick="remove('@Url.Action("RemoveFromWishlist","Wishlists",new {id=item.wishListID})')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Card -->
+
+    </div>
+    <!-- Grid column -->
+}
+

@@ -1,0 +1,163 @@
+﻿@model IEnumerable<OnlineStore_Identity.Models.Product>
+
+
+@*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Using template*@
+
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css /> -->
+<div id="temp" hidden>
+
+@foreach (var item in Model)
+{
+    <div class="product">
+        <div class="col-md-4 col-sm-6 mb-5 d-flex justify-content-center">
+            <div class="product-grid" style="width: 290px">
+                <div class="product-image">
+
+                    <img class="pic-1 w-100" src="~/Images/@(item.Stores.Count!=0 && item.Stores.FirstOrDefault().productPhoto!=null?item.Stores.FirstOrDefault().productPhoto:"ModelF1.jpg")" style="height:333px; cursor:pointer;" onclick="showDetails('@Url.Action("ProductDetails","Home",new {id=item.productID})')">
+                    <img class="pic-2 w-100" src="~/Images/@(item.Stores.Count!=0 && item.Stores.FirstOrDefault().productPhoto!=null?item.Stores.FirstOrDefault().productPhoto:"ModelF2.jpg")" style="height:333px;cursor:pointer;" onclick="showDetails('@Url.Action("ProductDetails","Home",new {id=item.productID})')">
+
+                    @*<ul class="social">
+                        <li><a href="" data-tip="Quick View"><i class="fa fa-search"></i></a></li>
+                        <li><a href="" data-tip="Add to Wishlist" onclick="AddToWishlist(@item.productID,event)"><i class="fa fa-shopping-bag"></i></a></li>
+                        <li><a href="" data-tip="Add to Cart"><i class="fa fa-shopping-cart"></i></a></li>
+                    </ul>*@
+                    <ul class="sociall">
+                        <li><span class="wishlistHome" style="cursor:pointer" onclick="AddToWishlistHome(@item.productID,event)"><i class="fa fa-heart"></i></span></li>
+                        <li><span style="cursor:pointer" onclick="showDetails('@Url.Action("ProductDetails","Home",new {id=item.productID})')"><i class="fa fa-shopping-cart"></i></span></li>
+                        <li><span style="cursor:pointer" onclick="showDetails('@Url.Action("ProductDetails","Home",new {id=item.productID})')"><i class="fa fa-search"></i></span></li>
+                    </ul>
+                    @*<span class="product-new-label">Sale</span>*@
+                    @*<span class="product-discount-label">20%</span>*@
+                    @*<span class="product-sale-label"> Sale</span>*@
+
+                    @if (item.productDiscount != 0)
+                    {
+                        <span class="product-sale-label">sale</span>
+                    }
+
+
+                </div>
+                @*<ul class="rating list-unstyled d-inline-flex">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= (item.Reviews.Count() == 0 ? 0 : item.Reviews.Select(r => r.rate).Sum() / item.Reviews.Count()))
+                        {
+                            <li>
+                                <i class="fas fa-star fa-sm text-primary"></i>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <i class="far fa-star fa-sm text-primary"></i>
+                            </li>
+                        }
+                    }
+                </ul>*@
+                <div class="bg-white">
+                    <ul class="rating list-unstyled d-inline-flex">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= (item.Reviews.Count() == 0 ? 0 : item.Reviews.Select(r => r.rate).Sum() / item.Reviews.Count()))
+                            {
+                                <li>
+                                    <i class="fas fa-star fa-sm" style="color: #FFD200;"></i>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <i class="fas fa-star fa-sm" style="color:lightgrey"></i>
+                                </li>
+                            }
+                        }
+
+                    </ul>
+                </div>
+                <div class="product-content mt-3">
+
+                    <h3 class="title mb-0 mt-1"><span style="cursor:pointer" onclick="showDetails('@Url.Action("ProductDetails","Home",new {id=item.productID})')">@item.productName</span></h3>
+                    <span class="product-category">@item.Category.categoryName</span>
+
+            @if (item.productDiscount == 0)
+            {
+                <div>
+                    <h6 style="color:#e74c3c">EGP @(Math.Round(item.productPrice ?? 0,2))</h6>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <h6>
+                        <span class="mr-1" style="color:#e74c3c">EGP @(Math.Round((item.productPrice)*(1-item.productDiscount/100)??0,2))</span>
+                        <span class="text-grey" style="color:#999;"><s>EGP @item.productPrice</s></span>
+                    </h6>
+                </div>
+            }
+
+                    <div style="cursor:pointer" class="add-to-cart pt-2" href="" onclick="showDetails('@Url.Action("ProductDetails","Home",new {id=item.productID})')"><i class="fa fa-shopping-cart"></i> Add To Cart</div>
+                </div>
+            </div>
+        </div>
+        @*<div class="col-md-3 col-sm-6">
+            <div class="product-grid">
+                <div class="product-image">
+                    <a href="#">
+                        <img class="pic-1" src="images/img-3.jpg">
+                        <img class="pic-2" src="images/img-4.jpg">
+                    </a>
+                    <ul class="social">
+                        <li><a href="" data-tip="Quick View"><i class="fa fa-search"></i></a></li>
+                        <li><a href="" data-tip="Add to Wishlist"><i class="fa fa-shopping-bag"></i></a></li>
+                        <li><a href="" data-tip="Add to Cart"><i class="fa fa-shopping-cart"></i></a></li>
+                    </ul>
+                    <span class="product-new-label">Sale</span>
+                    <span class="product-discount-label">50%</span>
+                </div>
+                <ul class="rating">
+                    <li class="fas fa-star"></li>
+                    <li class="fas fa-star"></li>
+                    <li class="fas fa-star"></li>
+                    <li class="fas fa-star"></li>
+                    <li class="fas fa-star"></li>
+                </ul>
+                <div class="product-content">
+                    <h3 class="title"><a href="#">Men's Plain Tshirt</a></h3>
+                    <div class="price">
+                        $5.00
+                        <span>$10.00</span>
+                    </div>
+                    <a class="add-to-cart" href="">+ Add To Cart</a>
+                </div>
+            </div>
+        </div>*@
+    </div>
+
+
+}
+</div>
+<div class="row" id="data-container"></div>
+<div id="pagination-container" class="d-flex flex-row-reverse"></div>
+<script src="~/js/pagination.js"></script>
+<link href="~/css/pagination.css" rel="stylesheet" />
+<script>
+    function simpleTemplating(data) {
+        var html = "";
+        $.each(data, function (index, item) {
+            html += item.innerHTML;
+        });
+        return html;
+    }
+    var prods = [].slice.call(document.getElementsByClassName("product"));
+
+    $('#pagination-container').pagination({
+        dataSource: prods,
+        pageSize: 6,
+        pageRange: null,
+        showPageNumbers: true,
+        callback: function (data, pagination) {
+            var html = simpleTemplating(data);
+            $('#data-container').html(html);
+        }
+    });
+</script>

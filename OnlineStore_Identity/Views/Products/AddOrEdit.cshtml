@@ -1,0 +1,235 @@
+﻿@model OnlineStore_Identity.Models.Product
+
+@{ Layout = null;}
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="productFrom" onsubmit="addordelete(event)">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="productID" />
+            <div class="form-group">
+                <label asp-for="productName" class="control-label"></label>
+                <div class="input-group">
+
+                    <input asp-for="productName" class="form-control" id="nameId" />
+                </div>
+                <span asp-validation-for="productName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="productDescription" class="control-label"></label>
+                <div class="input-group">
+                    <input asp-for="productDescription" class="form-control" id="proDesc" />
+                </div>
+                <span asp-validation-for="productDescription" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="productBrand" class="control-label"></label>
+                        <input asp-for="productBrand" class="form-control" id="proBrand" />
+                        <span asp-validation-for="productBrand" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="productMaterial" class="control-label"></label>
+                        <input asp-for="productMaterial" class="form-control" id="proMaterial" />
+                        <span asp-validation-for="productMaterial" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="productPrice" class="control-label"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <input asp-for="productPrice" class="form-control" id="proPrice" />
+                        </div>
+                        <span asp-validation-for="productPrice" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="productDiscount" class="control-label"></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <input asp-for="productDiscount" class="form-control" id="proDiscount" />
+                        </div>
+                        <span asp-validation-for="productDiscount" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            @*Class and Category list*@
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @*<label asp-for="productBrand" class="control-label"></label>
+        <input asp-for="productBrand" class="form-control" />
+        <span asp-validation-for="classID" class="text-danger"></span>*@
+                        @Html.LabelFor(s => s.classID)
+                        @Html.DropDownListFor(s => s.classID, (IEnumerable<SelectListItem>)ViewBag.classes, new { @class = "form-control" })
+                        <span asp-validation-for="classID" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @*<label asp-for="productMaterial" class="control-label"></label>
+        <input asp-for="productMaterial" class="form-control" />
+        <span asp-validation-for="categoryID" class="text-danger"></span>*@
+                        @Html.LabelFor(s => s.categoryID)
+                        @Html.DropDownListFor(s => s.categoryID, (IEnumerable<SelectListItem>)ViewBag.categories, new { @class = "form-control" })
+                        <span asp-validation-for="categoryID" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group justify-content-center d-flex">
+                <div class="d-inline">
+                    <input type="submit" value="Save" class="btn btn-primary">
+                    @*onsubmit="return jQueryAjaxPost(event);"*@
+                </div>
+                <div class=" d-inline ml-5">
+                    <input type="submit" value="Cancel" onclick="editDel()" class="btn btn-info d-inline " />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    //$(document).ready(function () {
+    //    $('#productFrom').submit(function (e) {
+    //        e.preventDefault();
+    //        console.log(e);
+
+    //        /*  var $form = $(this);*/
+    //        var form = document.getElementById("productFrom");
+    //        try {
+    //            $.ajax({
+    //                type: 'POST',
+    //                url: "Products/AddOrEdit",
+    //                data: new FormData(form),
+    //                contentType: false,
+    //                processData: false,
+    //                success: function (res) {
+
+    //                    $("#view-all").html(res);
+    //                    $('#form-modal .modal-body').html('');
+    //                    $('#form-modal .modal-title').html('');
+    //                    $('#form-modal').modal('hide');
+    //                    $.notify('Submitted successfuly', { globalPosition: 'top center', className: 'success' });
+
+    //                },
+    //                error: function (e) {
+    //                    console.log(e);
+    //                }
+    //            })
+
+    //        } catch (e) {
+    //            console.log(e);
+    //        }
+    //    });
+    //});
+    var i = 0;
+    var cs = document.getElementById("nameId").classList.contains('valid');
+
+    //var valName = document.getElementById("nameId").getAttribute("aria-invalid");
+
+    function addordelete(e) {
+        e.preventDefault();
+        /*  var $form = $(this);*/
+        var form = document.getElementById("productFrom");
+        var cs = document.getElementById("nameId").value;
+        var cv = document.getElementById("proDesc").value;
+        var cd = document.getElementById("proBrand").value;
+        var ce = document.getElementById("proMaterial").value;
+        var cf = document.getElementById("proPrice").value;
+        var cb = document.getElementById("proDiscount").value;
+
+        //var cs = document.getElementById("nameId").classList.contains('valid');
+        //var cv = document.getElementById("proDesc").classList.contains('valid');
+        //var cd = document.getElementById("proBrand").classList.contains('valid');
+        //var ce = document.getElementById("proMaterial").classList.contains('valid');
+        //var cf = document.getElementById("proPrice").classList.contains('valid');
+        //var cb = document.getElementById("proDiscount").classList.contains('valid');
+        //console.log(cs);
+        //console.log(cv);
+        if (cs != "" && cv != "" && cd != "" && ce != "" && cf != "" && cb != "" ) {
+            try {
+                $.ajax({
+                    type: 'POST',
+                    @*url: "AddOrEdit/@Model.productID",*@
+                    url: "@Url.Action("AddOrEdit")",
+                    data: new FormData(form),
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+
+                        $("#view-all").html(res);
+                        $('#form-modal .modal-body').html('');
+                        $('#form-modal .modal-title').html('');
+                        $('#form-modal').modal('hide');
+                        $.notify('Submitted successfuly', { globalPosition: 'top center', className: 'success' });
+                        $('#tableFilter').DataTable({
+                            "scrollY": "450px",
+                            "scrollCollapse": true,
+                            "paging": true,
+                            "select": true,
+                            "ordering": true,
+                            "searching": true,
+                            "scrollX": false,
+                            "autoWidth": true,
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'copy',
+                                    className: 'bg-primary',
+                                    text: '<i class="far fa-copy"></i> Copy'
+                                }, {
+                                    extend: 'excel',
+                                    className: 'bg-primary',
+                                    text: '<i class="far fa-file-excel"></i> Excel'
+                                }, {
+                                    extend: 'pdf',
+                                    className: 'bg-primary',
+                                    text: '<i class="far fa-file-pdf"></i> Pdf'
+                                }, {
+                                    extend: 'print',
+                                    className: 'bg-primary',
+                                    text: '<i class="fas fa-print"></i> Print'
+                                }
+
+                            ]
+                        });
+
+                    },
+                    error: function (err) {
+                        e.preventDefault();
+                        console.log(err);
+                    }
+                })
+
+            } catch (dodo) {
+                console.log(dodo);
+                e.preventDefault();
+            }
+        }
+        else {
+            e.preventDefault();
+        }
+
+    }
+</script>
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>

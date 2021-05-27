@@ -1,0 +1,119 @@
+﻿@model IEnumerable<Bill>
+<!--<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+<!------ Include the above in your HEAD tag ---------->
+
+<!--<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+<!------ Include the above in your HEAD tag ---------->
+<!-- Tabs -->
+<section id="tabs">
+    <div class="container">
+        <h6 class="section-title h1">Orders</h6>
+        <div class="row">
+            <div class="col-xs-12 ">
+                <nav>
+                    <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-open" role="tab" aria-controls="nav-profile" aria-selected="false">Open Orders</a>
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-close" role="tab" aria-controls="nav-home" aria-selected="true">Closed Orders</a>
+                    </div>
+                </nav>
+                <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+                    <div class="tab-pane fade" id="nav-open" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+                        <div class="card wish-list mb-3 max-height-550" >
+                            <div class="card-body w-100 justify-content-center d-flex">
+                                <!-- Card -->
+                                <div class="table-responsive">
+                                    <table id="openTableUser" class="table table-stripedd table-borderless border-0 border-b-2 brc-default-l1 border-radius-sm" width="100%">
+                                        <thead class="bg-primary  bgc-default-tp1 w-100">
+                                            <tr class="text-white justify-content-center">
+                                                <th style="border-top-left-radius:5px">#Order</th>
+                                                <th>Order Date</th>
+                                                <th>Excepected Delivery Date</th>
+                                                <th>Total</th>
+                                                <th>Payment</th>
+                                                <th style="border-top-right-radius:5px">Paid</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody class="text-95 text-secondary-d3">
+                                            
+                                            @foreach (var item in Model)
+                                            {
+                                                if (item.billDate.Value.AddDays(5) > DateTime.Now)
+                                                {
+                                <tr>
+                                    <td>@item.billID</td>
+                                    <td>@item.billDate.Value.ToShortDateString()</td>
+                                    <td>@item.billDate.Value.AddDays(3).ToShortDateString() ~ @item.billDate.Value.AddDays(5).ToShortDateString()</td>
+                                    <td class="text-95">EGP  @(Math.Round(item.billTotal ?? 0, 2))</td>
+                                    <td class="text-secondary-d2">@item.Payment.paymentType</td>
+                                    @if (item.paymentID == 2)
+                                    {
+                <td class="text-danger">
+                    <i class="fas fa-times"></i>
+                </td> }
+                                    else
+                                    {
+                <td class="text-success">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                </td>
+}
+                                </tr>
+}
+                        }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade show active" id="nav-close" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div class="card wish-list mb-3 max-height-550">
+                            <div class="card-body w-100 justify-content-center d-flex">
+                                <!-- Card -->
+                                <div class="table-responsive">
+                                    <table id="closeTableUser" class="table table-stripedd table-borderless border-0 border-b-2 brc-default-l1">
+                                        <thead class="bg-primary bgc-default-tp1">
+                                            <tr class="text-white">
+                                                <th style="border-top-left-radius:5px">#Order</th>
+                                                <th>Order Date</th>
+                                                <th>Delivered Date</th>
+                                                <th>Total</th>
+                                                <th style="border-top-right-radius:5px">Payment</th>
+                                                @*<th>Paid</th>*@
+                                            </tr>
+                                        </thead>
+
+                                        <tbody class="text-95 text-secondary-d3">
+                                           
+                                            @foreach (var item in Model)
+                                            {
+                                                if (item.billDate.Value.AddDays(5) < DateTime.Now)
+                                                {
+                                        <tr>
+                                            <td>@item.billID</td>
+                                            <td>@item.billDate.Value.ToShortDateString()</td>
+                                            <td>@(item.billDate.Value.AddDays(new Random().Next(3, 6)).ToShortDateString())</td>
+                                            <td class="text-95">EGP  @(Math.Round(item.billTotal ?? 0, 2))</td>
+                                            <td class="text-secondary-d2">@(item.Payment==null?"N/A":item.Payment.paymentType)</td>
+                                        </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ./Tabs -->

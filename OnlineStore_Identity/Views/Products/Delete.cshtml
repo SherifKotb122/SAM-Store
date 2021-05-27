@@ -1,0 +1,17 @@
+﻿@model OnlineStore_Identity.Models.Product
+
+@{ Layout = null;}
+<h5>Are you sure you want to delete @Model.productName product? </h5>
+<form asp-action="Delete" asp-route-id="@Model.productID" class="d-inline" id="delForm">
+    <div class="form-group mt-5 justify-content-center d-flex">
+        <div class="d-inline">
+            <input type="submit" onclick="AjaxDelete(event)" class="btn btn-primary d-inline" value="Delete" />
+
+        </div>
+        <div class=" d-inline ml-5">
+            <input type="submit" value="Cancel" onclick="canelDel()" class="btn btn-info d-inline " />
+        </div>
+       
+    </div>
+           
+</form>

@@ -1,0 +1,99 @@
+﻿@model OnlineStore_Identity.Models.Store
+@{
+    ViewData["Title"] = "Create";
+}
+
+<script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+<hr />
+
+<div class="row m-3 mx-2">
+    <div class="col-md-6">
+        <div class="form-group row">
+            <label for="productID" class="col-sm-2 col-form-label">product ID</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="productID" value="@Model.productID" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="productColor">product Color</label>
+            <input type="text" class="form-control" id="productColor" value="@Model.productColor" aria-describedby="emailHelp" placeholder="Enter color">
+        </div>
+        <div class="form-group">
+            <label for="productQuantity">product Quantity</label>
+            <input type="text" class="form-control" id="productQuantity"value="@Model.productQuantity" placeholder="enter quantity">
+        </div>
+        <div class="form-group">
+            <label for="productSize">product Size</label>
+            <select class="form-control" id="productSize" value="@Model.productSize">
+                <option>XXS</option>
+                <option>XS</option>
+                <option>S</option>
+                <option>M</option>
+                <option>L</option>
+                <option>XL</option>
+                <option>XXL</option>
+                <option>XXXL</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputFile">Select Image</label>
+            <input type="file" class="form-control-file" accept="image/*" id="productImage" multiple size="1" value="Upload image" aria-describedby="fileHelp">
+        </div>
+        <div class="col-md-4">
+            @*<img id="imgViewer"width="200" height="200" src="data: image / jpg;base64,@(Model.productImage == null ? "": Convert.ToBase64String(Model.productImage))">*@
+            <img src="~/Images/@Model.productPhoto" id="imgViewer" class="img-fluid w-100" height="50"/>
+        </div>
+        <div class="col-md-12 m-2">
+            <button id="Edittore" class="btn btn-primary">Save changes</button>
+        </div>
+    </div>
+</div>
+
+<script>
+            var file1;
+                $(document).ready(function () {
+
+                });
+            $("#productImage").change(function (event) {
+                    var files = event.target.files;
+                $("#imgViewer").attr("src", window.URL.createObjectURL(files[0]));
+                file1 = files[0];
+                console.log(files);
+            });
+
+
+    $("#Edittore").click(function () {
+                console.log(file1);
+                var formDate = new FormData();
+        @*if (file1 == null) {
+            formDate.append("productImage",@Model.productImage);
+        }
+        else {
+            formDate.append("file", file1);
+        }*@
+                formDate.append("file", file1);
+                console.log(file1);
+                formDate.append("productID",@Model.productID);
+                var txt = $("#productColor").val();
+                formDate.append("productColor", txt);
+                console.log($("#productColor").val());
+                formDate.append("productSize", $("#productSize").val());
+                console.log($("#productSize").val());
+                formDate.append("productQuantity", $("#productQuantity").val());
+                console.log($("#productQuantity").val());
+                    $.ajax({
+                        type: "post",
+                        url: "",
+                        data: formDate,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            console.log("succes");
+                            window.location = "../Details/@Model.productID";
+                        },
+                        error: function (data) {
+                            console.log("failed");
+                        }
+                    });
+                });
+</script>

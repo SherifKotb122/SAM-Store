@@ -1,0 +1,102 @@
+﻿@model OnlineStore_Identity.ViewModels.ProductDetailsVM
+@{
+
+}
+<!--Section: Block Content-->
+<script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+<section class="container">
+    <div class="row my-1 ">
+        <div class="card col-md-6">
+            <h3 class="card-header">    @Html.DisplayFor(modelItem => Model.product.productName)</h3>
+            <div class="card-body">
+                <p class="pt-1">
+                    @Html.DisplayFor(modelItem => Model.product.productDescription)
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Material</strong></th>
+                                <td>    @Html.DisplayFor(modelItem => Model.product.productMaterial)</td>
+                            </tr>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Discount </strong></th>
+                                <td>@Html.DisplayFor(modelItem => Model.product.productDiscount) %</td>
+                            </tr>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Price </strong></th>
+                                <td>@Html.DisplayFor(modelItem => Model.product.productPrice) LE</td>
+                            </tr>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Brand </strong></th>
+                                <td>@Html.DisplayFor(modelItem => Model.product.productBrand) </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <a asp-action="AddStore" asp-route-id="@Model.product.productID" class="btn btn-primary btn-md mr-1 mb-2">Add new to Stock</a>
+@*                                    <a onclick="showPopUp('@Url.Action("AddStore","Products",new {id=@Model.product.productID},Context.Request.Scheme),Context.Request.Scheme)', 'New Store')" class="btn btn-success text-white">New Product</a>*@
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="offset-md-2">
+                <h2>Available in Stock</h2>
+            </div>
+            <div class="row my-1 mx-1 px-2 py-3 shadow-lg">
+                <div class="col-md-12 col-sm-12 mx-1">
+                    @foreach (var item in Model.stores)
+                    {
+        <div class="card">
+            <div class="row card-body">
+                <div class="card-body col-md-3">
+                    @*                            <img src="~/Images/@item.productPhoto" class="card-img" />*@
+                    <img src="~/Images/@(item.productPhoto!=null?item.productPhoto:"ModelF1.jpg")" class="card-img" />
+
+                </div>
+                <div class="card-body col-md-3 ">
+                    <table class="table table-sm table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Color</strong></th>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.productColor)
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Size </strong></th>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.productSize)
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row"><strong>Quantity </strong></th>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.productQuantity)
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="pl-0 w-25" scope="row">
+                                    <a asp-action="DeleteStore" asp-route-id="@item.ID" class="btn btn-primary btn-md mr-1 mb-2">Delete</a>
+                                </th>
+                                <td>
+                                    <a asp-action="EditStore" asp-route-id="@item.ID" class="btn btn-light btn-md mr-1 mb-2">Edit</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+                        <br />            }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

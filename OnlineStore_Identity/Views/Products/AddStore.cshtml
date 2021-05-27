@@ -1,0 +1,111 @@
+﻿@model OnlineStore_Identity.ViewModels.StoreItemVM
+@{
+    ViewData["Title"] = "Create";
+
+    SelectListItem x = new SelectListItem()
+    {
+        Text = "",
+        Value = ""
+    };
+
+    //IEnumerable<SelectListItem> sizes = new List<SelectListItem>() {
+    //    new SelectListItem(){ Text="XXS",Value="XXS"},
+    //    new SelectListItem(){ Text="XS",Value="XS"},
+    //    new SelectListItem(){ Text="S",Value="S"},
+    //    new SelectListItem(){ Text="L",Value="L"},
+    //    new SelectListItem(){ Text="XL",Value="XL"},
+    //    new SelectListItem(){ Text="XXL",Value="XXL"},
+    //    new SelectListItem(){ Text="XXXL",Value="XXXL"}
+    //};
+}
+
+<script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+<hr />
+
+<div class="row m-3 mx-2">
+    <div class="col-md-6">
+        <div class="form-group row">
+            <label for="productID" class="col-sm-2 col-form-label">product ID</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control-plaintext" id="productID" value="@ViewData["id"]" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="productColor">product Color</label>
+            <input type="text" class="form-control" id="productColor" aria-describedby="emailHelp" placeholder="Enter color">
+        </div>
+        <div class="form-group">
+            <label for="productQuantity">product Quantity</label>
+            <input type="text" class="form-control" id="productQuantity" placeholder="enter quantity">
+        </div>
+        <div class="form-group">
+            <label for="productSize">product Size</label>
+            <select class="form-control" id="productSize">
+                <option>XXS</option>
+                <option>XS</option>
+                <option>S</option>
+                <option>M</option>
+                <option>L</option>
+                <option>XL</option>
+                <option>XXL</option>
+                <option>XXXL</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputFile">Select Image</label>
+            <input type="file" class="form-control-file" accept="image/*" id="productImage" multiple size="1" value="Upload image" aria-describedby="fileHelp">
+        </div>
+        <div class="col-md-4">
+            <img id="imgViewer" width="200" height="200" />
+        </div>
+        <div class="col-md-12 m-2">
+            <button id="AddStore" class="btn btn-primary">AddStore</button>
+        </div>
+    </div>
+</div>
+
+<script>
+            var file1;
+                $(document).ready(function () {
+
+                });
+                
+            $("#productImage").change(function (event) {
+                    var files = event.target.files;
+                $("#imgViewer").attr("src", window.URL.createObjectURL(files[0]));
+                file1 = files[0];
+                console.log(files);
+            });
+
+            $("#AddStore").click(function () {
+                console.log(file1);
+                var formDate = new FormData();
+
+                formDate.append("file", file1);
+                console.log(file1);
+                formDate.append("productID",@ViewData["id"]);
+                console.log(@ViewData["id"]);
+                var txt = $("#productColor").val();
+                formDate.append("productColor", txt);
+                console.log($("#productColor").val());
+                formDate.append("productSize", $("#productSize").val());
+                console.log($("#productSize").val());
+                formDate.append("productQuantity", $("#productQuantity").val());
+                console.log($("#productQuantity").val());
+
+                    $.ajax({
+                        type: "post",
+                        url: "",
+                        data: formDate,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            console.log("succes");
+                            window.location = "../Details/@ViewData["id"]";
+                        },
+                        error: function (data) {
+                            console.log("failed");
+                        }
+                    });
+                });
+</script>
